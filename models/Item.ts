@@ -28,17 +28,17 @@ const ItemSchema = new Schema<IItem, IItemModel>({
   health: {
     type: Number,
     required: true,
-    default: 100,
+    default: 0,
   },
   attack: {
     type: Number,
     required: true,
-    default: 10,
+    default: 0,
   },
   defense: {
     type: Number,
     required: true,
-    default: 10,
+    default: 0,
   },
 });
 
