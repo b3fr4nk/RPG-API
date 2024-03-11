@@ -13,10 +13,10 @@ export interface ICharacterDocument extends Document {
 // static methods for schemas
 export interface ICharacter extends ICharacterDocument {}
 
-//interface for book model
+//interface for Character model
 interface ICharacterModel extends Model<ICharacterDocument, {}> {}
 
-// Book Schema
+// Character Schema
 const CharacterSchema = new Schema<ICharacter, ICharacterModel>({
   name: {
     type: String,
