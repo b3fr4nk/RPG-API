@@ -2,6 +2,7 @@ import { Document, Model, Schema, model } from "mongoose";
 
 export interface ICharacterDocument extends Document {
   name: string;
+  owner: Schema.Types.ObjectId;
   items: Schema.Types.ObjectId[];
   health: Number;
   attack: Number;
@@ -21,6 +22,9 @@ const CharacterSchema = new Schema<ICharacter, ICharacterModel>({
   name: {
     type: String,
     required: true,
+  },
+  owner: {
+    type: Schema.Types.ObjectId,
   },
   items: [
     {

@@ -7,6 +7,7 @@ import "dotenv/config";
 import path from "path";
 
 import itemsRouter from "./routes/items";
+import charactersRouter from "./routes/character";
 
 const app = express();
 
@@ -27,7 +28,7 @@ app.use(cookieParser());
 app.use(cors());
 
 // routes
-app.use("/api/v1", [itemsRouter]);
+app.use("/api/v1", [itemsRouter, charactersRouter]);
 
 app.listen("3000", () => {
   console.log("Server listening on port 3000");
