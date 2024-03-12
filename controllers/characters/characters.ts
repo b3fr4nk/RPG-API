@@ -168,11 +168,9 @@ export const equipItem = async (
     }
     equipping.forEach((item) => {
       if (!character.inventory.includes(item)) {
-        return res
-          .status(400)
-          .json({
-            message: `Cannot equip item ${item}. Item does not exist in player inventory.`,
-          });
+        return res.status(400).json({
+          message: `Cannot equip item ${item}. Item does not exist in player inventory.`,
+        });
       }
       // add checks to make sure only one item of each type is equipped
     });
@@ -182,12 +180,10 @@ export const equipItem = async (
     character.inventory = newInventory;
     await character.save();
 
-    return res
-      .status(200)
-      .json({
-        message: `Character successfully equipped items!`,
-        equipment: equipping,
-      });
+    return res.status(200).json({
+      message: `Character successfully equipped items!`,
+      equipment: equipping,
+    });
   } catch (err) {
     console.log(err);
     next(err);
@@ -199,3 +195,21 @@ export const equipItem = async (
 //quest complete
 
 //destroy
+export const deleteCharacter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { characterId } = req.params;
+
+    await Character.findByIdAndDelete(characterId);
+
+    return res
+      .status(200)
+      .json({ message: `Character ${characterId} successfully deleted` });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};

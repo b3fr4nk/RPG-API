@@ -6,6 +6,7 @@ import {
   equipItem,
   getAllCharacters,
   updateCharacterName,
+  deleteCharacter,
 } from "../controllers/characters/characters";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const router = express.Router();
 router.post("/create", createCharacter);
 router.get("/", getAllCharacters);
 router.put("/:characterId/name", updateCharacterName);
+router.delete("/:characterId", deleteCharacter);
 
 //inventory management
 router.put("/:characterId/inventory/add", addItemToInventory);
