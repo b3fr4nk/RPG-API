@@ -1,11 +1,22 @@
-import Express from "express";
+import express from "express";
 
-import { createCharacter } from "../controllers/characters/characters";
+import {
+  addItemToInventory,
+  createCharacter,
+  equipItem,
+  getAllCharacters,
+  updateCharacterName,
+} from "../controllers/characters/characters";
 
-const router = Express.Router();
+const router = express.Router();
 
-router.use("/characters", router);
-
+//CRUD
 router.post("/create", createCharacter);
+router.get("/", getAllCharacters);
+router.put("/:characterId/name", updateCharacterName);
+
+//inventory management
+router.put("/:characterId/inventory/add", addItemToInventory);
+router.put("/:characterId/inventory/equip", equipItem);
 
 export default router;

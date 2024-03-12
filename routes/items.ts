@@ -1,4 +1,4 @@
-import Express from "express";
+import express from "express";
 
 import {
   getItemById,
@@ -8,9 +8,7 @@ import {
   createItem,
 } from "../controllers/items/items";
 
-const router = Express.Router();
-
-router.use("/items", router);
+const router = express.Router();
 
 router.post("/create", createItem);
 router.get("/", getAllItems);

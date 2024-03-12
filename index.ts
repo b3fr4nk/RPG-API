@@ -3,7 +3,6 @@ import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
-import "dotenv/config";
 import path from "path";
 
 import itemsRouter from "./routes/items";
@@ -22,13 +21,15 @@ mongoose
   });
 
 //middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
 
 // routes
-app.use("/api/v1", [itemsRouter, charactersRouter]);
+const baseRoute = "/api/v1";
+app.use(`${baseRoute}/items`, itemsRouter);
+app.use(`${baseRoute}/characters`, charactersRouter);
 
 app.listen("3000", () => {
   console.log("Server listening on port 3000");

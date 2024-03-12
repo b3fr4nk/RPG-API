@@ -76,8 +76,6 @@ export const updateById = async (
   try {
     const { health, attack, defense } = req.body;
 
-    const oldItem = await Item.findById(req.params.itemId);
-
     const fields = { health, attack, defense };
 
     // add auth stuff

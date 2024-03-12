@@ -3,7 +3,8 @@ import { Document, Model, Schema, model } from "mongoose";
 export interface ICharacterDocument extends Document {
   name: string;
   owner: Schema.Types.ObjectId;
-  items: Schema.Types.ObjectId[];
+  equipment: Schema.Types.ObjectId[];
+  inventory: Schema.Types.ObjectId[];
   health: Number;
   attack: Number;
   defense: Number;
@@ -26,7 +27,13 @@ const CharacterSchema = new Schema<ICharacter, ICharacterModel>({
   owner: {
     type: Schema.Types.ObjectId,
   },
-  items: [
+  equipment: [
+    {
+      type: Schema.Types.ObjectId,
+      required: false,
+    },
+  ],
+  inventory: [
     {
       type: Schema.Types.ObjectId,
       required: false,
