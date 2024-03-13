@@ -23,6 +23,7 @@ export const createCharacter = async (
 ) => {
   try {
     const { name, health, attack, defense, xp } = req.body;
+    const owner = (<any>req).user.id;
 
     const findCharacter = await Character.findOne({ name: name });
 
@@ -32,7 +33,7 @@ export const createCharacter = async (
       });
     }
 
-    const fields = { name, health, attack, defense, xp };
+    const fields = { name, health, attack, defense, xp, owner };
 
     const character = await new Character(fields);
     await character.save();
@@ -40,8 +41,6 @@ export const createCharacter = async (
     return res
       .status(200)
       .json({ message: `Character ${character.id} created`, success: "true" });
-
-    // Add character ownership here
   } catch (err) {
     console.log(err);
     next(err);
@@ -96,6 +95,19 @@ export const updateCharacterName = async (
 
     const fields = { name };
 
+    const owner = (<any>req).user.id;
+
+    const isOwner = await Character.findOne({
+      _id: req.params.characterId,
+      owner: owner,
+    });
+
+    if (!isOwner) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
+    }
+
     await Character.findByIdAndUpdate(characterId, fields, {
       new: true,
       select: "-__v",
@@ -120,10 +132,23 @@ export const addItemToInventory = async (
     const { characterId } = req.params;
     const { itemIds } = req.body;
 
+    const owner = (<any>req).user.id;
+
     const character = await Character.findById(characterId);
 
     if (!character) {
       return res.status(400).json({ message: "Character not found" });
+    }
+
+    const isOwner = await Character.findOne({
+      _id: req.params.characterId,
+      owner: owner,
+    });
+
+    if (!isOwner) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
     }
 
     const itemsNotFound: Array<ObjectId> = [];
@@ -163,6 +188,8 @@ export const removeItemFromInventory = async (
     const { characterId } = req.params;
     const toRemove: ObjectId[] = req.body.itemIds;
 
+    const owner = (<any>req).user.id;
+
     const character = await Character.findById(characterId);
 
     if (!character) {
@@ -170,6 +197,18 @@ export const removeItemFromInventory = async (
         .status(400)
         .json({ message: `Character ${characterId} not found` });
     }
+
+    const isOwner = await Character.findOne({
+      _id: req.params.characterId,
+      owner: owner,
+    });
+
+    if (!isOwner) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
+    }
+
     for (let i = 0; i < toRemove.length; i++) {
       if (!character.inventory.includes(toRemove[i])) {
         return res
@@ -184,7 +223,7 @@ export const removeItemFromInventory = async (
     character.save();
 
     return res.status(200).json({
-      message: `Character successfully equipped items!`,
+      message: `Character successfully dropped items!`,
       equipment: toRemove,
     });
   } catch (err) {
@@ -203,12 +242,25 @@ export const equipItem = async (
     const { characterId } = req.params;
     const equipping: ObjectId[] = req.body.itemIds;
 
+    const owner = (<any>req).user.id;
+
     const character = await Character.findById(characterId);
 
     if (!character) {
       return res
         .status(400)
         .json({ message: `Character ${characterId} not found.` });
+    }
+
+    const isOwner = await Character.findOne({
+      _id: req.params.characterId,
+      owner: owner,
+    });
+
+    if (!isOwner) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
     }
 
     for (let i = 0; i < equipping.length; i++) {
@@ -244,10 +296,23 @@ export const unequipItem = async (
     const { characterId } = req.params;
     const removing: ObjectId[] = req.body.itemIds;
 
+    const owner = (<any>req).user.id;
+
     const character = await Character.findById(characterId);
 
     if (!character) {
       return res.status(400).json({ message: "Error Character not found" });
+    }
+
+    const isOwner = await Character.findOne({
+      _id: req.params.characterId,
+      owner: owner,
+    });
+
+    if (!isOwner) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
     }
 
     for (let i = 0; i < removing.length; i++) {
@@ -285,6 +350,25 @@ export const deleteCharacter = async (
 ) => {
   try {
     const { characterId } = req.params;
+
+    const owner = (<any>req).user.id;
+
+    const character = await Character.findById(characterId);
+
+    if (!character) {
+      return res.status(400).json({ message: "Character not found" });
+    }
+
+    const isOwner = await Character.findOne({
+      _id: req.params.characterId,
+      owner: owner,
+    });
+
+    if (!isOwner) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
+    }
 
     await Character.findByIdAndDelete(characterId);
 

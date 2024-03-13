@@ -6,7 +6,7 @@ export const checkAuth = (req: Request, res: Response, next: NextFunction) => {
 
   if (!token) {
     return res.status(401).json({
-      message: "No token provided",
+      message: "You must be logged in to do this.",
     });
   }
 

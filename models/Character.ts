@@ -26,6 +26,7 @@ const CharacterSchema = new Schema<ICharacter, ICharacterModel>({
   },
   owner: {
     type: Schema.Types.ObjectId,
+    required: true,
   },
   equipment: [
     {
