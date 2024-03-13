@@ -7,6 +7,8 @@ import {
   getAllCharacters,
   updateCharacterName,
   deleteCharacter,
+  unequipItem,
+  removeItemFromInventory,
 } from "../controllers/characters/characters";
 
 const router = express.Router();
@@ -19,6 +21,8 @@ router.delete("/:characterId", deleteCharacter);
 
 //inventory management
 router.put("/:characterId/inventory/add", addItemToInventory);
+router.put("/:characterId/inventory/drop", removeItemFromInventory);
 router.put("/:characterId/inventory/equip", equipItem);
+router.put("/:characterId/inventory/unequip", unequipItem);
 
 export default router;
