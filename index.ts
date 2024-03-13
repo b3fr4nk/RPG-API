@@ -7,6 +7,7 @@ import path from "path";
 
 import itemsRouter from "./routes/items";
 import charactersRouter from "./routes/character";
+import userRouter from "./routes/accounts";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(cookieParser());
 const baseRoute = "/api/v1";
 app.use(`${baseRoute}/items`, itemsRouter);
 app.use(`${baseRoute}/characters`, charactersRouter);
+app.use(`${baseRoute}/users`, userRouter);
 
 app.listen("3000", () => {
   console.log("Server listening on port 3000");

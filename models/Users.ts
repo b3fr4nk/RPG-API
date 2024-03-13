@@ -8,6 +8,7 @@ export interface IUserDocument extends Document {
   _id: Schema.Types.ObjectId;
   username: string;
   password: string;
+  characters: Schema.Types.ObjectId;
   registrationDate: Date;
   lastLoginDate: Date;
 }
