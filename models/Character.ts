@@ -5,10 +5,10 @@ export interface ICharacterDocument extends Document {
   owner: Schema.Types.ObjectId;
   equipment: Schema.Types.ObjectId[];
   inventory: Schema.Types.ObjectId[];
-  health: Number;
-  attack: Number;
-  defense: Number;
-  xp: Number;
+  health: number;
+  attack: number;
+  defense: number;
+  xp: number;
   questsAccepted: Schema.Types.ObjectId[];
 }
 

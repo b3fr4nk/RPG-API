@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import Item from "../../models/Item";
 import Character from "../../models/Character";
-import { ObjectId } from "mongoose";
+import Quest from "../../models/Quest";
+import { ObjectId, Query } from "mongoose";
 
 // Removes item from current location
-const dropItem = async (ids: ObjectId[], toRemove: ObjectId[]) => {
+const removeFromList = async (ids: ObjectId[], toRemove: ObjectId[]) => {
   var items: ObjectId[];
   items = [];
   ids.filter((player) => {
@@ -13,6 +14,19 @@ const dropItem = async (ids: ObjectId[], toRemove: ObjectId[]) => {
     }
   });
   return items;
+};
+
+const isOwner = async (characterId: string, ownerId: string) => {
+  const isOwner = await Character.findOne({
+    _id: characterId,
+    owner: ownerId,
+  });
+
+  if (!isOwner) {
+    return false;
+  }
+
+  return true;
 };
 
 //create
@@ -217,7 +231,7 @@ export const removeItemFromInventory = async (
       }
     }
 
-    const newInventory = await dropItem(character.inventory, toRemove);
+    const newInventory = await removeFromList(character.inventory, toRemove);
     character.inventory = newInventory;
 
     character.save();
@@ -272,7 +286,7 @@ export const equipItem = async (
       // add checks to make sure only one item of each type is equipped
     }
 
-    const newInventory = await dropItem(character.inventory, equipping);
+    const newInventory = await removeFromList(character.inventory, equipping);
     character.equipment = character.equipment.concat(equipping);
     character.inventory = newInventory;
     await character.save();
@@ -323,7 +337,7 @@ export const unequipItem = async (
       }
     }
 
-    const newEquipment = await dropItem(character.inventory, removing);
+    const newEquipment = await removeFromList(character.inventory, removing);
     character.inventory = character.inventory.concat(removing);
     character.equipment = newEquipment;
 
@@ -338,9 +352,118 @@ export const unequipItem = async (
   }
 };
 
-// add quest
+// complete quest
+export const completeObjective = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { characterId } = req.params;
+    const { questId } = req.body;
 
-//quest complete
+    const owner = await (<any>req).user.id;
+
+    const character = await Character.findById(characterId);
+
+    if (!character) {
+      return res.status(400).json({ message: "Error Character not found" });
+    }
+
+    if (!(await isOwner(characterId, owner))) {
+      return res
+        .status(401)
+        .json({ message: "You are not the owner of this character" });
+    }
+
+    const quest = await Quest.findById(questId);
+
+    if (!quest) {
+      return res.status(400).json({ message: "quest not found" });
+    }
+
+    if (!character.questsAccepted.includes(questId)) {
+      return res
+        .status(400)
+        .json({ message: "character is not currently on this quest." });
+    }
+
+    const itemsGranted: ObjectId[] = [];
+
+    for (let i = 0; i < quest.itemsGranted.length; i++) {
+      const item = await Item.findById(quest.itemsGranted[i]);
+
+      if (item) {
+        itemsGranted.push(item._id);
+      }
+    }
+
+    console.log(itemsGranted);
+
+    character.xp = quest.xpGranted + character.xp;
+    character.inventory = character.inventory.concat(itemsGranted);
+    const newQuests = await removeFromList(character.questsAccepted, [questId]);
+    character.questsAccepted = newQuests;
+
+    character.save();
+
+    const newAcceptedBy = await removeFromList(quest.acceptedBy, [
+      character.id,
+    ]);
+    quest.acceptedBy = newAcceptedBy;
+    quest.completedBy.push(character.id);
+
+    quest.save();
+
+    return res.status(200).json({ message: "quest successfully completed." });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+// accept quest
+export const acceptQuest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { characterId } = req.params;
+    const { questId } = req.body;
+
+    const owner = (<any>req).user.id;
+
+    const character = await Character.findById(characterId);
+
+    if (!character) {
+      return res.status(400).json({ message: "Error Character not found" });
+    }
+
+    if (!(await isOwner(characterId, owner))) {
+      return res
+        .status(401)
+        .json({ message: `You are not the owner of this character.` });
+    }
+
+    const quest = await Quest.findById(questId);
+
+    if (!quest) {
+      return res.status(400).json({ message: "quest not found" });
+    }
+
+    character.questsAccepted.push(quest._id);
+    character.save();
+
+    quest.acceptedBy.push(character._id);
+    quest.save();
+
+    return res.status(200).json({ message: "quest successfully accepted." });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
 
 //destroy
 export const deleteCharacter = async (

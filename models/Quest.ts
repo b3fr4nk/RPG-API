@@ -2,8 +2,11 @@ import { Document, Model, Schema, model } from "mongoose";
 
 export interface IQuestDocument extends Document {
   name: string;
-  objectives: string[];
+  completedBy: Schema.Types.ObjectId[];
   acceptedBy: Schema.Types.ObjectId[];
+  objectives: string;
+  xpGranted: number;
+  itemsGranted: Schema.Types.ObjectId[];
 }
 
 // static methods for schemas
@@ -18,16 +21,29 @@ const QuestSchema = new Schema<IQuest, IQuestModel>({
     type: String,
     required: true,
   },
+  completedBy: [
+    {
+      type: Schema.Types.ObjectId,
+    },
+  ],
+  acceptedBy: [
+    {
+      type: Schema.Types.ObjectId,
+    },
+  ],
   objectives: [
     {
       type: String,
       required: true,
     },
   ],
-  acceptedBy: [
+  xpGranted: {
+    type: Number,
+    default: 0,
+  },
+  itemsGranted: [
     {
       type: Schema.Types.ObjectId,
-      default: [],
     },
   ],
 });
