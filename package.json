@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "An API for handling rpg elements such as items, player stats, and quests. Should be easy to implement to make game development easier and faster.",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
     "build": "npx tsc",
     "start": "nodemon index.ts"
