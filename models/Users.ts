@@ -8,6 +8,7 @@ export interface IUserDocument extends Document {
   _id: Schema.Types.ObjectId;
   username: string;
   password: string;
+  isAdmin: Boolean;
   characters: Schema.Types.ObjectId;
   registrationDate: Date;
   lastLoginDate: Date;
@@ -34,6 +35,10 @@ const UserSchema = new Schema<IUser, IUserModel>({
     type: String,
     required: true,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 }, {
   timestamps: true,
 });

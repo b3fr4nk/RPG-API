@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Item from "../../models/Item";
+import User from "../../models/Users";
 //create
 export const createItem = async (
   req: Request,
@@ -8,6 +9,22 @@ export const createItem = async (
 ) => {
   try {
     //add auth stuff
+
+    const userId = (<any>req).user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this." });
+    }
+
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this" });
+    }
 
     const { name, type, health, attack, defense } = req.body;
 
@@ -78,7 +95,21 @@ export const updateById = async (
 
     const fields = { health, attack, defense };
 
-    // add auth stuff
+    const userId = (<any>req).user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this." });
+    }
+
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this" });
+    }
 
     const item = await Item.findByIdAndUpdate(req.params.itemId, fields, {
       new: true,
@@ -102,7 +133,21 @@ export const deleteById = async (
   next: NextFunction
 ) => {
   try {
-    //add auth stuff
+    const userId = (<any>req).user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this." });
+    }
+
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this" });
+    }
 
     await Item.findByIdAndDelete(req.params.itemId);
 

@@ -7,13 +7,14 @@ import {
   deleteById,
   createItem,
 } from "../controllers/items/items";
+import { checkAuth } from "../middleware/checkAuth";
 
 const router = express.Router();
 
-router.post("/create", createItem);
+router.post("/create", checkAuth, createItem);
 router.get("/", getAllItems);
 router.get("/:itemId", getItemById);
-router.put("/:itemId", updateById);
-router.delete("/:itemId", deleteById);
+router.put("/:itemId", checkAuth, updateById);
+router.delete("/:itemId", checkAuth, deleteById);
 
 export default router;

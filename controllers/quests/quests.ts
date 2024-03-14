@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Item from "../../models/Item";
+import User from "../../models/Users";
 import Character from "../../models/Character";
 import { ObjectId } from "mongoose";
 import Quest from "../../models/Quest";
@@ -13,9 +14,21 @@ export const createQuest = async (
   try {
     const { name, objectives, itemsGranted, xpGranted } = req.body;
 
-    const user = (<any>req).user.id;
+    const userId = (<any>req).user.id;
 
-    // add admin stuff
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this." });
+    }
+
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this" });
+    }
 
     const findQuest = await Quest.findOne({ name: name });
 
@@ -79,11 +92,25 @@ export const updateQuest = async (
 ) => {
   try {
     const { questId } = req.params;
-    const { name, objectives } = req.body;
+    const { name, objectives, xpGranted } = req.body;
 
-    const fields = { name, objectives };
+    const fields = { name, objectives, xpGranted };
 
-    const user = (<any>req).user.id;
+    const userId = (<any>req).user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this." });
+    }
+
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this" });
+    }
 
     const questFound = await Quest.findById(questId);
 
@@ -114,7 +141,21 @@ export const deleteQuest = async (
   try {
     const { questId } = req.params;
 
-    const user = (<any>req).user.id;
+    const userId = (<any>req).user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this." });
+    }
+
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "you must be an admin user to do this" });
+    }
 
     await Quest.findByIdAndDelete(questId);
 

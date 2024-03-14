@@ -1,7 +1,12 @@
 import express from "express";
 import { checkAuth } from "../middleware/checkAuth";
 
-import { register, login, logout } from "../controllers/users/auth";
+import {
+  register,
+  login,
+  logout,
+  registerAdmin,
+} from "../controllers/users/auth";
 
 import {
   getUserById,
@@ -14,6 +19,7 @@ const router = express.Router();
 
 // Auth routes
 router.post("/auth/register", register);
+router.post("/auth/register/admin", registerAdmin);
 router.post("/auth/login", login);
 router.post("/auth/logout", checkAuth, logout);
 
