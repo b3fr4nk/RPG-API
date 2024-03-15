@@ -35,7 +35,7 @@ app.use(`${baseRoute}/characters`, charactersRouter);
 app.use(`${baseRoute}/users`, userRouter);
 app.use(`${baseRoute}/quests`, questRouter);
 
-app.listen("3000", () => {
+app.listen(process.env.port, () => {
   console.log("Server listening on port 3000");
 });
 
